@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>云南之旅 · 2026国庆</title>
+<style>
+:root{
+  --bg:#fdf6f0;
+  --ink:#332f2c;
+  --gray:#8b827c;
+  --line:#f2e7dd;
+  --card:#fff;
+
+  --sun:#ff8f5e;
+  --sun-d:#ef6a3f;
+  --gold:#f5b53f;
+  --sky:#3fa9c9;
+  --violet:#8478d8;
+  --rose:#f0637a;
+  --dusk:#7b8fd0;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  color:var(--ink);line-height:1.65;display:flex;flex-direction:column;
+  background:
+    radial-gradient(900px 520px at 8% -6%, #ffe6d3 0%, transparent 62%),
+    radial-gradient(760px 440px at 102% -2%, #dcf0f7 0%, transparent 58%),
+    radial-gradient(700px 500px at 50% 108%, #fdeede 0%, transparent 60%),
+    var(--bg);
+}
+
+/* ============ 动效 ============ */
+@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(240,99,122,.5)}50%{box-shadow:0 0 0 7px rgba(240,99,122,0)}}
+@keyframes grow{from{width:0;opacity:.3}to{width:var(--w);opacity:1}}
+@keyframes shimmer{0%{transform:translateX(-70%) skewX(-18deg)}100%{transform:translateX(220%) skewX(-18deg)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes lbIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+
+/* ============ 顶部 ============ */
+.topbar{
+  position:relative;overflow:hidden;flex-shrink:0;z-index:50;
+  background:linear-gradient(122deg,#ef6a3f 0%,#ff8f5e 42%,#f5b53f 100%);
+  color:#fff;box-shadow:0 4px 20px rgba(239,106,63,.26);
+  padding-top:env(safe-area-inset-top);
+}
+.topbar::after{
+  content:'';position:absolute;top:0;bottom:0;width:38%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  animation:shimmer 5.5s ease-in-out infinite;pointer-events:none;
+}
+.tb-head{display:flex;align-items:center;justify-content:space-between;padding:11px 16px 6px;position:relative;z-index:2;}
+.tb-title{font-size:15.5px;font-weight:800;letter-spacing:2.5px;text-shadow:0 1px 4px rgba(0,0,0,.14);}
+.tb-sub{font-size:11px;opacity:.88;letter-spacing:.5px;}
+.tb-pg{font-size:11px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;backdrop-filter:blur(4px);}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:0 12px 9px;scrollbar-width:none;position:relative;z-index:2;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  flex-shrink:0;font-size:12px;padding:5px 14px;border-radius:16px;
+  background:rgba(255,255,255,.18);color:rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.16);cursor:pointer;white-space:nowrap;font-weight:700;
+  transition:transform .18s cubic-bezier(.22,1,.36,1),background .18s,color .18s;
+}
+.tab:active{transform:scale(.93);}
+.tab.on{background:#fff;color:var(--sun-d);border-color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.14);transform:translateY(-1px);}
+.prog{height:3px;background:rgba(255,255,255,.22);position:relative;z-index:2;}
+.prog i{display:block;height:100%;background:#fff;border-radius:0 3px 3px 0;transition:width .42s cubic-bezier(.22,1,.36,1);box-shadow:0 0 10px rgba(255,255,255,.7);}
+
+/* ============ 面板 ============ */
+.stage{flex:1;position:relative;overflow:hidden;}
+.panel{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:16px 14px calc(72px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch;
+  opacity:0;pointer-events:none;transform:translateX(26px);
+  transition:opacity .24s ease,transform .24s ease;
+}
+.panel.on{opacity:1;pointer-events:auto;transform:none;}
+.panel.back{transform:translateX(-26px);}
+.panel.on > *{animation:riseIn .5s cubic-bezier(.22,1,.36,1) both;}
+.panel.on > *:nth-child(1){animation-delay:.02s}
+.panel.on > *:nth-child(2){animation-delay:.07s}
+.panel.on > *:nth-child(3){animation-delay:.12s}
+.panel.on > *:nth-child(4){animation-delay:.17s}
+.panel.on > *:nth-child(5){animation-delay:.21s}
+.panel.on > *:nth-child(6){animation-delay:.25s}
+.panel.on > *:nth-child(7){animation-delay:.28s}
+.panel.on > *:nth-child(8){animation-delay:.31s}
+.panel.on > *:nth-child(n+9){animation-delay:.34s}
+
+/* ============ 日期头 ============ */
+.dhead{display:flex;gap:12px;align-items:stretch;margin-bottom:15px;}
+.dbadge{
+  min-width:68px;border-radius:19px;color:#fff;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:13px 8px;flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+.dbadge::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.28),transparent 55%);}
+.dbadge .l{font-size:9px;letter-spacing:1.6px;opacity:.9;position:relative;z-index:2;}
+.dbadge .n{font-size:31px;font-weight:900;line-height:1;margin:1px 0;position:relative;z-index:2;text-shadow:0 2px 6px rgba(0,0,0,.15);}
+.dbadge .d{font-size:10px;opacity:.9;position:relative;z-index:2;}
+.dinfo{flex:1;display:flex;flex-direction:column;justify-content:center;}
+.droute{display:inline-block;font-size:11px;font-weight:800;padding:3.5px 11px;border-radius:10px;margin-bottom:6px;align-self:flex-start;}
+.dtitle{font-size:17.5px;font-weight:900;line-height:1.35;letter-spacing:.3px;}
+.dtag{font-size:12px;color:var(--gray);margin-top:3px;}
+
+/* ============ 卡片 ============ */
+.card{
+  background:var(--card);border-radius:19px;padding:15px;margin-bottom:12px;
+  box-shadow:0 3px 18px rgba(140,100,70,.09);border:1px solid rgba(255,255,255,.9);
+  transition:transform .26s cubic-bezier(.22,1,.36,1),box-shadow .26s;
+}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(140,100,70,.14);}
+.ctitle{font-size:12px;font-weight:900;letter-spacing:1.2px;margin-bottom:11px;display:flex;align-items:center;gap:6px;color:#5c534c;}
+
+/* ============ 竖版图廊 ============ */
+.gallery{display:grid;gap:10px;margin-bottom:14px;}
+.gallery.two{grid-template-columns:1fr 1fr;}
+.gallery.one{grid-template-columns:minmax(0,62%);justify-content:center;}
+.pcard{
+  position:relative;aspect-ratio:3/4;border-radius:17px;overflow:hidden;
+  background:#f0e6dc;box-shadow:0 5px 20px rgba(140,100,70,.16);cursor:zoom-in;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s;
+}
+.pcard:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(140,100,70,.24);}
+.pcard:active{transform:scale(.975);}
+.pcard img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.22,1,.36,1);}
+.pcard:hover img{transform:scale(1.07);}
+.pcard figcaption{
+  position:absolute;left:0;right:0;bottom:0;padding:28px 11px 10px;
+  background:linear-gradient(transparent,rgba(28,16,10,.5) 40%,rgba(28,16,10,.86));
+  color:#fff;pointer-events:none;
+}
+.pcard figcaption b{display:block;font-size:12.5px;font-weight:800;line-height:1.35;text-shadow:0 1px 4px rgba(0,0,0,.55);}
+.pcard figcaption span{display:block;font-size:10.5px;opacity:.9;margin-top:2px;line-height:1.4;}
+.gallery.one .pcard figcaption b{font-size:14.5px;}
+.gallery.one .pcard figcaption span{font-size:11.5px;}
+.pcard .badge{
+  position:absolute;top:9px;left:9px;font-size:9.5px;font-weight:900;letter-spacing:.6px;
+  background:rgba(255,255,255,.9);color:var(--sun-d);padding:3.5px 9px;border-radius:9px;
+  backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.16);
+}
+
+/* ============ 灯箱 ============ */
+.lb{position:fixed;inset:0;z-index:200;background:rgba(20,12,8,.95);display:none;align-items:center;justify-content:center;padding:16px;flex-direction:column;gap:14px;}
+.lb.on{display:flex;animation:popIn .28s cubic-bezier(.22,1,.36,1) both;}
+.lb img{max-width:100%;max-height:80vh;border-radius:14px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:lbIn .34s cubic-bezier(.22,1,.36,1) both;}
+.lb .cap{color:#fff;font-size:13.5px;font-weight:800;text-align:center;letter-spacing:.5px;}
+.lb .cls{position:absolute;top:calc(16px + env(safe-area-inset-top));right:18px;color:#fff;font-size:27px;opacity:.75;line-height:1;}
+
+/* ============ 时间线 ============ */
+.tl{position:relative;padding-left:64px;}
+.tl::before{content:'';position:absolute;left:56px;top:6px;bottom:6px;width:2px;background:linear-gradient(#f4dfd0,#f0e6dd);border-radius:2px;}
+.tli{position:relative;padding-bottom:15px;}
+.tli:last-child{padding-bottom:0;}
+.tli .tm{position:absolute;left:-64px;top:0;width:48px;text-align:right;font-size:12px;font-weight:900;color:var(--sun-d);font-variant-numeric:tabular-nums;}
+.tli::before{content:'';position:absolute;left:-10px;top:6px;width:9px;height:9px;border-radius:50%;background:#fff;border:2.5px solid var(--sun);z-index:2;transition:transform .2s;}
+.tli.hi::before{background:var(--rose);border-color:var(--rose);width:11px;height:11px;left:-11px;animation:pulseDot 2.4s ease-out infinite;}
+.tli.hi .tm{color:var(--rose);}
+.tli .tt{font-size:14px;font-weight:800;line-height:1.45;}
+.tli.hi .tt{color:var(--rose);}
+.tli .td{font-size:12.5px;color:var(--gray);margin-top:2px;line-height:1.62;}
+
+/* ============ 标签 ============ */
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{font-size:11.5px;padding:3.5px 11px;border-radius:11px;border:1px solid;transition:transform .18s;}
+.chip:hover{transform:translateY(-2px) scale(1.03);}
+.chip.food{background:#fff4e6;color:#a3651f;border-color:#f6dcb6;}
+.chip.gear{background:#e9f5fa;color:#2c6a80;border-color:#c5e3ee;}
+
+/* ============ 提示盒 ============ */
+.box{display:flex;gap:9px;padding:12px 14px;border-radius:14px;font-size:12.5px;line-height:1.65;margin-bottom:11px;transition:transform .22s;}
+.box:hover{transform:translateX(2px);}
+.box b{font-weight:800;}
+.box .bi{font-size:16px;flex-shrink:0;line-height:1.4;}
+.box.tip{background:#e9f5fb;color:#26596e;border-left:3.5px solid var(--sky);}
+.box.warn{background:#fff6e6;color:#8a5720;border-left:3.5px solid var(--gold);}
+.box.dang{background:#ffeee9;color:#9e3a24;border-left:3.5px solid var(--sun-d);}
+.box.hotel{background:#f4f1fd;color:#473c78;border-left:3.5px solid var(--violet);}
+
+/* ============ 表 ============ */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+.tbl td{padding:7px 0;border-bottom:1px dashed var(--line);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td:last-child{text-align:right;white-space:nowrap;}
+.ov{width:100%;border-collapse:collapse;font-size:12px;}
+.ov th{background:linear-gradient(#fff2e6,#ffeadb);color:var(--sun-d);padding:9px 6px;font-size:11px;text-align:left;font-weight:900;}
+.ov th:first-child{border-radius:9px 0 0 0;}
+.ov th:last-child{border-radius:0 9px 0 0;}
+.ov td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5;}
+.ov tr:hover td{background:#fffaf5;}
+.ov .dn{font-weight:900;color:var(--sun-d);white-space:nowrap;}
+.wx{width:100%;border-collapse:collapse;font-size:12px;}
+.wx th{background:linear-gradient(#fff2e6,#ffeadb);color:var(--sun-d);padding:9px 5px;font-size:10.5px;font-weight:900;text-align:center;}
+.wx th:first-child{text-align:left;border-radius:9px 0 0 0;}
+.wx th:last-child{border-radius:0 9px 0 0;}
+.wx td{padding:9px 5px;border-bottom:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums;}
+.wx tr:hover td{background:#fffaf5;}
+.wx td:first-child{text-align:left;font-weight:800;}
+.wx .alt{font-size:10px;color:#b0a49c;font-weight:400;display:block;}
+.wx .hot{color:#e07c33;font-weight:900;}
+.wx .cold{color:#3789bb;font-weight:900;}
+.wx .frz{color:var(--rose);font-weight:900;}
+
+/* ============ 海拔条 ============ */
+.altrow{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.altname{width:84px;font-size:11.5px;font-weight:800;flex-shrink:0;line-height:1.3;}
+.altname span{display:block;font-size:9.5px;color:#b5aaa2;font-weight:400;}
+.altbarwrap{flex:1;height:20px;background:#f6efe8;border-radius:10px;overflow:hidden;}
+.altbar{
+  height:100%;border-radius:10px;display:flex;align-items:center;justify-content:flex-end;
+  padding-right:8px;color:#fff;font-size:10px;font-weight:900;min-width:46px;width:var(--w);
+  text-shadow:0 1px 2px rgba(0,0,0,.2);
+}
+.panel.on .altbar{animation:grow 1s cubic-bezier(.22,1,.36,1) both;}
+.panel.on .altrow:nth-child(2) .altbar{animation-delay:.05s}
+.panel.on .altrow:nth-child(3) .altbar{animation-delay:.1s}
+.panel.on .altrow:nth-child(4) .altbar{animation-delay:.15s}
+.panel.on .altrow:nth-child(5) .altbar{animation-delay:.2s}
+.panel.on .altrow:nth-child(6) .altbar{animation-delay:.25s}
+.panel.on .altrow:nth-child(7) .altbar{animation-delay:.3s}
+.panel.on .altrow:nth-child(8) .altbar{animation-delay:.35s}
+.panel.on .altrow:nth-child(9) .altbar{animation-delay:.4s}
+.panel.on .altrow:nth-child(10) .altbar{animation-delay:.45s}
+
+/* ============ 底部翻页 ============ */
+.nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 14px calc(9px + env(safe-area-inset-bottom));
+  background:rgba(255,251,247,.93);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);box-shadow:0 -3px 18px rgba(140,100,70,.07);
+}
+.nbtn{
+  flex:1;max-width:124px;font-size:12.5px;font-weight:800;padding:10px 0;border-radius:13px;
+  background:linear-gradient(135deg,var(--sun),var(--sun-d));color:#fff;border:none;cursor:pointer;
+  box-shadow:0 3px 12px rgba(239,106,63,.32);
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s,opacity .18s;
+}
+.nbtn:active{transform:scale(.94);}
+.nbtn:disabled{background:#eae0d8;color:#c3b7ae;box-shadow:none;}
+.dots{display:flex;gap:5px;}
+.dot{width:6.5px;height:6.5px;border-radius:50%;background:#e6d8cc;transition:.28s cubic-bezier(.22,1,.36,1);cursor:pointer;}
+.dot.on{background:linear-gradient(90deg,var(--sun),var(--sun-d));width:20px;border-radius:4px;}
+
+@media(min-width:720px){
+  .panel{padding-left:max(14px,calc((100vw - 700px)/2));padding-right:max(14px,calc((100vw - 700px)/2));}
+  .gallery.one{grid-template-columns:minmax(0,44%);}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-head">
+    <div>
+      <div class="tb-title">🌿 云南之旅</div>
+      <div class="tb-sub">2026.9.28 – 10.5 · 8天7晚 · 家庭三人</div>
+    </div>
+    <div class="tb-pg" id="pgnum">1 / 10</div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="prog"><i id="progbar" style="width:10%"></i></div>
+</div>
+
+<div class="stage" id="stage">
+
+<!-- ============ 0 总览 ============ -->
+<section class="panel on">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#ff9a6b,#ef6a3f);"><span class="l">TRIP</span><span class="n">8</span><span class="d">天7晚</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#ffeee4;color:var(--sun-d);">🗺️ 行程总览</span>
+      <div class="dtitle">合肥 → 昆明 → 大理 → 丽江<br>→ 香格里拉 → 梅里 → 昆明</div>
+      <div class="dtag">高铁 + 自驾混合 · 老人友好节奏</div>
+    </div>
+  </div>
+
+  <div class="gallery two">
+    <figure class="pcard"><img src="img/14-kawagebo.jpg" alt="卡瓦格博日照金山" loading="lazy"><span class="badge">DAY 7</span><figcaption><b>卡瓦格博 · 日照金山</b><span>6740m 云南第一高峰</span></figcaption></figure>
+    <figure class="pcard"><img src="img/03-shuanglang-sunset.jpg" alt="双廊洱海日落" loading="lazy"><span class="badge">DAY 2</span><figcaption><b>双廊 · 洱海日落</b><span>苍山在对岸</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">📋 八日概览</div>
+    <table class="ov">
+      <tr><th>Day</th><th>路线</th><th>核心</th></tr>
+      <tr><td class="dn">1<br><span style="font-weight:400;color:#b0a49c;">9/28</span></td><td>合肥✈昆明</td><td>晚班机落地休整</td></tr>
+      <tr><td class="dn">2<br><span style="font-weight:400;color:#b0a49c;">9/29</span></td><td>昆明🚄大理</td><td>篆新市场·翠湖<br>双廊古镇·洱海日落</td></tr>
+      <tr><td class="dn">3<br><span style="font-weight:400;color:#b0a49c;">9/30</span></td><td>大理🚄丽江</td><td>洱海晨雾·取车<br>束河古镇</td></tr>
+      <tr><td class="dn">4<br><span style="font-weight:400;color:#b0a49c;">10/1</span></td><td>丽江</td><td>白沙日照金山·甘海子<br>云杉坪·蓝月谷</td></tr>
+      <tr><td class="dn">5<br><span style="font-weight:400;color:#b0a49c;">10/2</span></td><td>丽江🚗香格里拉</td><td>虎跳峡·哈巴雪山<br>白水台·独克宗</td></tr>
+      <tr><td class="dn">6<br><span style="font-weight:400;color:#b0a49c;">10/3</span></td><td>香格里拉🚗梅里</td><td>普达措·松赞林寺<br>白马雪山·梅里落日</td></tr>
+      <tr><td class="dn">7<br><span style="font-weight:400;color:#b0a49c;">10/4</span></td><td>梅里🚗丽江</td><td>日照金山·金沙江大湾<br>纳帕海·返丽江</td></tr>
+      <tr><td class="dn">8<br><span style="font-weight:400;color:#b0a49c;">10/5</span></td><td>丽江🚄昆明✈合肥</td><td>C452早班·采购<br>下午飞回家</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">✈️🚄 交通汇总</div>
+    <table class="tbl">
+      <tr><td>9/28 20:00→22:35<br><span style="color:#b0a49c;">✈ 3U8234</span></td><td>合肥新桥→昆明长水</td></tr>
+      <tr><td>9/29 11:02→13:16<br><span style="color:#b0a49c;">🚄 D8680</span></td><td>昆明→大理</td></tr>
+      <tr><td>9/30 11:47→14:15<br><span style="color:#b0a49c;">🚄 C377</span></td><td>大理→丽江</td></tr>
+      <tr><td>10/5 08:08→12:02<br><span style="color:#b0a49c;">🚄 C452</span></td><td>丽江→昆明</td></tr>
+      <tr><td>10/5 16:05→18:30<br><span style="color:#b0a49c;">✈ 3U8233</span></td><td>昆明长水→合肥新桥</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🚗 自驾段</div>
+    <table class="tbl">
+      <tr><td>车型</td><td>捷途旅行者（2.0T四驱）</td></tr>
+      <tr><td>取车</td><td>9/30 下午 · 丽江站</td></tr>
+      <tr><td>还车</td><td>10/4 傍晚 · 丽江</td></tr>
+      <tr><td>自驾天数</td><td>Day3 – Day7 共5天</td></tr>
+    </table>
+  </div>
+
+  <div class="box warn"><span class="bi">⚠️</span><span>海拔梯度上升合理：昆明1891 → 大理1900 → 丽江2400 → 香格里拉3280 → 普达措3705 → 白马雪山垭口<b>4292</b> → 飞来寺3400。<br><b>10/2 抵达香格里拉当晚是高反最需要注意的一夜。</b></span></div>
+</section>
+
+<!-- ============ 1 Day1 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#93a6de,#6b80c4);"><span class="l">DAY</span><span class="n">1</span><span class="d">9/28 一</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#eef1fb;color:#5b6ea8;">✈️ 合肥 → 昆明</span>
+      <div class="dtitle">飞往春城，落地休整</div>
+      <div class="dtag">今天只有一个任务：睡好</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🕐 时间线</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">白天</span><div class="tt">收拾行李</div><div class="td">证件、常用药、红景天、充电器、薄羽绒</div></div>
+      <div class="tli"><span class="tm">18:00</span><div class="tt">出发合肥新桥机场</div><div class="td">提前2小时到，国庆前一天人多</div></div>
+      <div class="tli hi"><span class="tm">20:00</span><div class="tt">✈ 3U8234 起飞</div><div class="td">合肥新桥 → 昆明长水，约2小时35分</div></div>
+      <div class="tli"><span class="tm">22:35</span><div class="tt">落地昆明长水</div><div class="td">取行李，打车进城约40分钟</div></div>
+      <div class="tli"><span class="tm">23:30</span><div class="tt">抵达酒店 check in</div><div class="td">直接洗漱睡觉，明早要早起</div></div>
+    </div>
+  </div>
+
+  <div class="box hotel"><span class="bi">🏨</span><span>
+    <b>格林豪泰智选酒店（昆明火车站店）</b><br>
+    智能大床房 × 2间｜9/28 入住 → 9/29 离店<br>
+    📍 就在昆明站旁，明早去大理的高铁站步行可达
+  </span></div>
+
+  <div class="box tip"><span class="bi">💊</span><span><b>出发前一周开始服红景天</b>，为后面的高原段做准备。爸妈如有慢性病药物，记得备够8天的量。</span></div>
+</section>
+
+<!-- ============ 2 Day2 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#57bdd8,#2f95b4);"><span class="l">DAY</span><span class="n">2</span><span class="d">9/29 二</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#e6f5fa;color:#2b7f9b;">🚄 昆明 → 大理双廊</span>
+      <div class="dtitle">昆明早市 · 双廊洱海日落</div>
+      <div class="dtag">上午看市井，傍晚看洱海</div>
+    </div>
+  </div>
+
+  <div class="gallery one">
+    <figure class="pcard"><img src="img/01-zhuanxin.jpg" alt="篆新农贸市场" loading="lazy"><span class="badge">07:20</span><figcaption><b>篆新农贸市场</b><span>昆明最大本地菜市场 · 野生菌当季</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🌅 上午 · 昆明市井</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">06:30</span><div class="tt">起床</div><div class="td">行李寄存酒店前台，轻装出门</div></div>
+      <div class="tli"><span class="tm">07:00</span><div class="tt">打车去篆新农贸市场</div><div class="td">约20分钟</div></div>
+      <div class="tli hi"><span class="tm">07:20</span><div class="tt">⭐ 篆新农贸市场</div><div class="td">早餐直接在市场解决——豆花米线、烧饵块、小锅米线。顺便看野生菌（9月底正当季）、鲜花饼、云南土特产</div></div>
+      <div class="tli"><span class="tm">08:55</span><div class="tt">翠湖公园</div><div class="td">湖畔散步，老人晨练打太极跳舞，免费开放。节奏放慢别赶</div></div>
+      <div class="tli"><span class="tm">10:00</span><div class="tt">打车回昆明站</div><div class="td">取行李，10:25 进站候车</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🚄 中午 · 高铁大理</div>
+    <div class="tl">
+      <div class="tli hi"><span class="tm">11:02</span><div class="tt">D8680 昆明 → 大理</div><div class="td">2小时14分</div></div>
+      <div class="tli"><span class="tm">13:16</span><div class="tt">抵达大理站</div><div class="td">建议提前让民宿安排接站车（约60km，1小时）</div></div>
+      <div class="tli"><span class="tm">14:30</span><div class="tt">抵达双廊 check in</div><div class="td">放行李，露台先看一眼洱海</div></div>
+    </div>
+  </div>
+
+  <div class="gallery two">
+    <figure class="pcard"><img src="img/02-yujidao.jpg" alt="玉几岛" loading="lazy"><span class="badge">16:30</span><figcaption><b>玉几岛</b><span>洱海三岛之一<br>家家流水户户养花</span></figcaption></figure>
+    <figure class="pcard"><img src="img/03-shuanglang-sunset.jpg" alt="双廊洱海日落" loading="lazy"><span class="badge">18:40</span><figcaption><b>洱海日落</b><span>19:08 日落<br>水面染成玫瑰金</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🌊 下午 · 双廊古镇（北门入 → 南门出）</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">15:10</span><div class="tt">民族文化街</div><div class="td">白族民居、扎染、手工银饰</div></div>
+      <div class="tli"><span class="tm">15:45</span><div class="tt">古戏台</div><div class="td">白族传统建筑，偶有表演</div></div>
+      <div class="tli"><span class="tm">16:05</span><div class="tt">魁星阁广场</div><div class="td">「百年大理」摄影展，免费，有洱海视野</div></div>
+      <div class="tli hi"><span class="tm">16:30</span><div class="tt">⭐ 玉几岛</div><div class="td">太阳宫、月亮宫外观打卡。洱海三岛之一，白族民居精华</div></div>
+      <div class="tli"><span class="tm">17:30</span><div class="tt">临海海街步道</div><div class="td">沿洱海滨海步道，全程平路，视野最开阔的一段</div></div>
+      <div class="tli"><span class="tm">18:10</span><div class="tt">南诏风情岛码头</div><div class="td">远眺即可，不上岛</div></div>
+      <div class="tli hi"><span class="tm">18:40</span><div class="tt">⭐⭐ 日落观景台</div><div class="td">9/29 大理日落 <b>19:08</b>。苍山在对岸，落日把洱海染成玫瑰金 📸</div></div>
+      <div class="tli"><span class="tm">19:40</span><div class="tt">晚餐</div><div class="td">双廊渔家馆，洱海鲜鱼砂锅 + 白族米酒</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🍜 今日必吃</div>
+    <div class="chips">
+      <span class="chip food">豆花米线</span><span class="chip food">烧饵块</span>
+      <span class="chip food">野生菌</span><span class="chip food">洱海鲜鱼砂锅</span>
+      <span class="chip food">白族米酒</span>
+    </div>
+  </div>
+
+  <div class="box dang"><span class="bi">⚠️</span><span><b>三个坑，避开：</b><br>
+    ① <b>太阳宫内部</b>只在 9:00–14:00 开放，14:30才到，赶不上，只能外观<br>
+    ② <b>杨丽萍民族服饰艺术馆</b> 17:00 闭馆，按此节奏会关门<br>
+    ③ <b>南诏风情岛</b> 17:30 停止入园，远眺就够了
+  </span></div>
+
+  <div class="box tip"><span class="bi">🚌</span><span>双廊景区有<b>观光车</b>，老人走累了随时叫。中途在海街找家海景咖啡坐20分钟等日落，比一直走舒服。</span></div>
+
+  <div class="box hotel"><span class="bi">🏨</span><span>
+    <b>大理寂光海墅民宿（双廊古镇店）</b><br>
+    渔归海景亲子房｜海景露台｜坚果投影｜9/29 → 9/30<br>
+    📍 双廊古镇内，露台直面洱海
+  </span></div>
+</section>
+
+<!-- ============ 3 Day3 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#f0b45c,#dc9130);"><span class="l">DAY</span><span class="n">3</span><span class="d">9/30 三</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#fff3e2;color:#b87c22;">🚄 大理 → 丽江束河</span>
+      <div class="dtitle">洱海晨雾 · 取车 · 束河古镇</div>
+      <div class="dtag">不用早起，中午的车</div>
+    </div>
+  </div>
+
+  <div class="gallery two">
+    <figure class="pcard"><img src="img/04-erhai-dawn.jpg" alt="洱海晨雾" loading="lazy"><span class="badge">08:00</span><figcaption><b>洱海晨雾</b><span>游客还没醒<br>渔船出港</span></figcaption></figure>
+    <figure class="pcard"><img src="img/05-qinglongqiao.jpg" alt="束河青龙桥" loading="lazy"><span class="badge">17:20</span><figcaption><b>束河 · 青龙桥</b><span>明代石拱桥<br>400多年历史</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🌊 上午 · 双廊慢时光</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">07:30</span><div class="tt">起床</div><div class="td">不用早起</div></div>
+      <div class="tli hi"><span class="tm">08:00</span><div class="tt">⭐ 双廊晨间溜达</div><div class="td">晨雾贴着水面，游客还没醒，渔船出港。沿湖边走一段就行</div></div>
+      <div class="tli"><span class="tm">09:00</span><div class="tt">早餐 + 收拾行李</div><div class="td">民宿露台吃最好</div></div>
+      <div class="tli"><span class="tm">10:00</span><div class="tt">退房，去大理站</div><div class="td">约1小时</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🚄 中午 · 高铁丽江 + 取车</div>
+    <div class="tl">
+      <div class="tli hi"><span class="tm">11:47</span><div class="tt">C377 大理 → 丽江</div><div class="td">2小时28分｜<b>建议买一等座</b>，这段票价便宜，坐着更舒服</div></div>
+      <div class="tli"><span class="tm">14:15</span><div class="tt">抵达丽江站</div><div class="td"></div></div>
+      <div class="tli hi"><span class="tm">14:15</span><div class="tt">🚗 丽江站取车</div><div class="td">捷途旅行者。验车、拍照留证、检查胎压和随车工具。预留45分钟</div></div>
+      <div class="tli"><span class="tm">15:40</span><div class="tt">抵达束河 check in</div><div class="td">云台和院，放行李</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🏘️ 下午 · 束河古镇</div>
+    <div class="tl">
+      <div class="tli hi"><span class="tm">16:10</span><div class="tt">⭐ 九鼎龙潭 + 茶马古道博物馆</div><div class="td">潭水极清，天晴时有玉龙雪山倒影。博物馆是明代木氏土司「束河院」，内有 <b>6幅明代壁画</b>（省级文物）<br><b>⏰ 博物馆 17:30 闭馆，所以放最前面</b></div></div>
+      <div class="tli"><span class="tm">17:00</span><div class="tt">三眼井</div><div class="td">纳西水利智慧：一眼饮用、二眼洗菜、三眼洗衣，至今仍在用</div></div>
+      <div class="tli"><span class="tm">17:20</span><div class="tt">青龙桥</div><div class="td">明代石拱桥，400多年，束河最老的建筑</div></div>
+      <div class="tli"><span class="tm">17:45</span><div class="tt">☕ 飞花触水</div><div class="td">临水喝咖啡，垂柳+流水+石桥，江南水墨感。<b>这里是给爸妈歇脚的点</b></div></div>
+      <div class="tli"><span class="tm">18:20</span><div class="tt">仁里巷 / 康普巷</div><div class="td">随便拐进居民区小巷，纳西人真实生活，游客几乎没有</div></div>
+      <div class="tli"><span class="tm">19:00</span><div class="tt">四方街</div><div class="td">看落日余晖（丽江 9/30 日落约 19:05）</div></div>
+      <div class="tli"><span class="tm">19:20</span><div class="tt">晚餐</div><div class="td">腊排骨火锅 + 鸡豆凉粉，束河比大研实惠</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🍜 今日必吃</div>
+    <div class="chips">
+      <span class="chip food">砂锅鱼</span><span class="chip food">乳扇</span>
+      <span class="chip food">丽江粑粑</span><span class="chip food">腊排骨火锅</span>
+      <span class="chip food">鸡豆凉粉</span><span class="chip food">纳西烤茶</span>
+    </div>
+  </div>
+
+  <div class="box warn"><span class="bi">⚠️</span><span><b>今晚开始高原准备</b>——束河 2400m，从大理 1900m 上来了500m。不喝酒、多喝水、早睡。</span></div>
+
+  <div class="box tip"><span class="bi">🅿️</span><span><b>提前问民宿有没有停车位</b>。束河古镇内多数院落民宿不能开车进去，可能要停在古镇外停车场。这个务必先确认。</span></div>
+
+  <div class="box hotel"><span class="bi">🏨</span><span>
+    <b>云台和院 · Serendipity · 日照金山 · 纳西庭院度假美宿</b><br>
+    <b>连住 2 晚</b>｜9/30 入住 → 10/2 离店<br>
+    📍 丽江束河，纳西庭院风格
+  </span></div>
+</section>
+
+<!-- ============ 4 Day4 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#f0b45c,#dc9130);"><span class="l">DAY</span><span class="n">4</span><span class="d">10/1 四</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#fff3e2;color:#b87c22;">🏔️ 丽江 · 玉龙雪山</span>
+      <div class="dtitle">日照金山 · 甘海子 · 云杉坪 · 蓝月谷</div>
+      <div class="dtag">全程不上大索道，老人零压力</div>
+    </div>
+  </div>
+
+  <div class="gallery one">
+    <figure class="pcard"><img src="img/06-baisha-goldmt.jpg" alt="白沙日照金山" loading="lazy"><span class="badge">07:00</span><figcaption><b>白沙 · 玉龙雪山日照金山</b><span>07:12 日出 · 本地摄影机位，人少</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🌄 清晨 · 白沙看日照金山</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">06:30</span><div class="tt">起床</div><div class="td">穿厚点，清晨约8-10℃</div></div>
+      <div class="tli hi"><span class="tm">07:00</span><div class="tt">⭐ 白沙古镇看日照金山</div><div class="td">丽江 10/1 日出约 <b>07:12</b>。村口开阔处或田边就能看，无需进村。<br>人比大研、黑龙潭少很多。<b>10月初概率不高，看到是赚到</b></div></div>
+      <div class="tli"><span class="tm">08:00</span><div class="tt">出发玉龙雪山景区</div><div class="td">约20分钟</div></div>
+    </div>
+  </div>
+
+  <div class="gallery two">
+    <figure class="pcard"><img src="img/07-ganhaizi.jpg" alt="甘海子草甸" loading="lazy"><span class="badge">08:40</span><figcaption><b>甘海子草甸</b><span>3100m 十三峰全景<br>全家福最佳机位</span></figcaption></figure>
+    <figure class="pcard"><img src="img/08-lanyuegu.jpg" alt="蓝月谷" loading="lazy"><span class="badge">13:30</span><figcaption><b>蓝月谷</b><span>水色碧蓝如翡翠<br>木栈道全程平坦</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🏔️ 白天 · 玉龙雪山</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">08:30</span><div class="tt">抵达景区，购票入园</div><div class="td">进山费 + 环保车（必买）</div></div>
+      <div class="tli hi"><span class="tm">08:40</span><div class="tt">⭐ 甘海子草甸（3100m）</div><div class="td">十三峰全景铺开，10月草甸金黄。<b>平地站着就能看全景</b>，拍全家福最佳机位 📸</div></div>
+      <div class="tli hi"><span class="tm">09:30</span><div class="tt">⭐⭐ 云杉坪索道（3240m）</div><div class="td">索道约7分钟上山，出站是开阔草甸和原始云杉林。木栈道环线走一圈约40分钟，<b>全程平缓</b>。索道现场买即可，不用抢</div></div>
+      <div class="tli"><span class="tm">12:00</span><div class="tt">午餐</div><div class="td">景区内简餐，或出景区在山脚吃土鸡火锅</div></div>
+      <div class="tli hi"><span class="tm">13:30</span><div class="tt">⭐⭐ 蓝月谷</div><div class="td">四个湖串成一线（玉液湖→镜潭湖→蓝月湖→听涛湖）。<b>老人建议买电瓶车票</b>，走累了随时上车</div></div>
+      <div class="tli"><span class="tm">16:00</span><div class="tt">白沙古镇（回程顺路）</div><div class="td">早上只在村口看雪山，下午再进村。<b>白沙壁画</b>明代作品，全国重点文保。游客极少<br><span style="color:var(--rose);">累了可以直接砍掉回去休息</span></div></div>
+      <div class="tli"><span class="tm">19:00</span><div class="tt">晚餐 + 早睡</div><div class="td">束河，黑猪干巴 + 鸡豆凉粉。21:00 睡，明天自驾要早起</div></div>
+    </div>
+  </div>
+
+  <div class="box dang"><span class="bi">🚫</span><span><b>为什么不上大索道</b><br>
+    ① 终点 <b>4506m</b>，前面完全没有高原适应，对老人是明显高反风险<br>
+    ② 需提前7天实名预约、每晚20:00放票，国庆秒空<br>
+    ③ 云杉坪 3240m 的景已经够，缓坡不用爬<br>
+    → <b>留给下次冬天来看日照金山</b>
+  </span></div>
+
+  <div class="box tip"><span class="bi">🎫</span><span>大门票建议提前在「<b>玉龙雪山服务</b>」微信小程序购买，国庆现场排队较长。</span></div>
+
+  <div class="box hotel"><span class="bi">🏨</span><span><b>云台和院</b>（连住第2晚）｜明日 10/2 退房自驾</span></div>
+</section>
+
+<!-- ============ 5 Day5 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#9a8fe4,#7166cd);"><span class="l">DAY</span><span class="n">5</span><span class="d">10/2 五</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#f1eefc;color:#6357b8;">🚗 丽江 → 香格里拉</span>
+      <div class="dtitle">自驾虎香环线</div>
+      <div class="dtag">虎跳峡 · 哈巴雪山 · 白水台 · 独克宗</div>
+    </div>
+  </div>
+
+  <div class="gallery two">
+    <figure class="pcard"><img src="img/10-hutiaoxia.jpg" alt="虎跳峡" loading="lazy"><span class="badge">10:45</span><figcaption><b>虎跳峡</b><span>金沙江最窄处仅30米<br>扶梯直下江边</span></figcaption></figure>
+    <figure class="pcard"><img src="img/09-baishuitai.jpg" alt="白水台" loading="lazy"><span class="badge">16:20</span><figcaption><b>白水台</b><span>碳酸钙梯田<br>东巴文化发源地</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🕐 时间线</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">08:00</span><div class="tt">起床，早餐，退房装车</div><div class="td"></div></div>
+      <div class="tli"><span class="tm">09:00</span><div class="tt">🚗 束河出发，走 S221 北上</div><div class="td"></div></div>
+      <div class="tli hi"><span class="tm">10:45</span><div class="tt">⭐ 虎跳峡（7号停车场）</div><div class="td">上虎跳主入口，<b>乘扶梯下到江边观景台</b>（老人不用走陡台阶）。金沙江在玉龙、哈巴两山间狂奔</div></div>
+      <div class="tli"><span class="tm">12:30</span><div class="tt">虎跳峡镇午餐</div><div class="td"><b>加满油</b>——后面加油站少</div></div>
+      <div class="tli"><span class="tm">13:50</span><div class="tt">望天瀑观景台</div><div class="td">路边停车即可</div></div>
+      <div class="tli"><span class="tm">14:50</span><div class="tt">哈巴雪山观景台</div><div class="td">哈巴雪山正面，免费</div></div>
+      <div class="tli hi"><span class="tm">15:30</span><div class="tt">🚦 决策点（见下方）</div><div class="td"></div></div>
+      <div class="tli"><span class="tm">16:20</span><div class="tt">白水台</div><div class="td">碳酸钙梯田，东巴文化发源地</div></div>
+      <div class="tli"><span class="tm">17:30</span><div class="tt">🚗 前往独克宗古城</div><div class="td">约100km 山路，2.5–3.5小时</div></div>
+      <div class="tli"><span class="tm">20:30</span><div class="tt">抵达独克宗 check in</div><div class="td">21:00 吃点热的（牦牛火锅），别吃太饱。22:00 早睡开制氧机</div></div>
+    </div>
+  </div>
+
+  <div class="box dang"><span class="bi">🚦</span><span><b>路上的决策点：15:30</b><br>
+    离开哈巴雪山观景台时看一眼表——<br>
+    ✅ <b>早于 15:30</b>：按计划去白水台，约 20:30 到香格里拉<br>
+    ⚠️ <b>晚于 15:30</b>：<b>放弃白水台</b>，掉头走 G214 直上香格里拉，约 18:30–19:00 到<br>
+    <span style="opacity:.82;">不用提前纠结，到那天看实际进度、爸妈状态、天气，现场定</span>
+  </span></div>
+
+  <div class="box warn"><span class="bi">🌙</span><span><b>如果真的摸黑开山路，三条硬规矩</b><br>
+    ① 副驾必须有人清醒陪聊，夜驾最怕单调犯困<br>
+    ② 不超车、不赶时间，宁可 21:30 到也别抢那10分钟<br>
+    ③ 一有困意立刻靠边停10分钟，<b>高原缺氧会放大疲劳</b>
+  </span></div>
+
+  <div class="box hotel"><span class="bi">🏨</span><span>
+    <b>香格里拉觅舍客栈（独克宗古城店）</b><br>
+    锦时·三人间｜制氧｜地暖｜10/2 → 10/3<br>
+    💡 <b>提前微信联系客栈</b>：告知可能晚到（20:30后），确认前台值班、留停车位、把制氧机先开着
+  </span></div>
+</section>
+
+<!-- ============ 6 Day6 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#9a8fe4,#7166cd);"><span class="l">DAY</span><span class="n">6</span><span class="d">10/3 六</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#f1eefc;color:#6357b8;">🚗 香格里拉 → 梅里</span>
+      <div class="dtitle">普达措 · 松赞林寺 · 梅里落日</div>
+      <div class="dtag">全程最硬的一天，海拔最高 4292m</div>
+    </div>
+  </div>
+
+  <div class="gallery two">
+    <figure class="pcard"><img src="img/11-pudacuo.jpg" alt="普达措" loading="lazy"><span class="badge">08:00</span><figcaption><b>普达措 · 属都湖</b><span>3705m 高原牧场<br>10月白桦金黄</span></figcaption></figure>
+    <figure class="pcard"><img src="img/12-songzanlin.jpg" alt="松赞林寺" loading="lazy"><span class="badge">12:30</span><figcaption><b>松赞林寺</b><span>小布达拉宫<br>圣湖畔远眺免费</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🕐 时间线</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">06:30</span><div class="tt">起床，早餐</div><div class="td">高原早餐吃热的，别空腹</div></div>
+      <div class="tli"><span class="tm">07:00</span><div class="tt">🚗 退房出发普达措</div><div class="td">约22km，40分钟</div></div>
+      <div class="tli hi"><span class="tm">08:00</span><div class="tt">⭐⭐ 属都湖（3705m）</div><div class="td">白桦林10月金黄，湖面倒影，候鸟。景区电瓶车+木栈道，全程平缓</div></div>
+      <div class="tli hi"><span class="tm">09:50</span><div class="tt">⭐⭐ 碧塔海（3539m）</div><div class="td">高原湖泊，金黄草甸环绕，10月是全年最美的时候</div></div>
+      <div class="tli"><span class="tm">11:30</span><div class="tt">午餐</div><div class="td">景区内简餐，或回市区吃</div></div>
+      <div class="tli hi"><span class="tm">12:30</span><div class="tt">⭐ 松赞林寺远眺</div><div class="td"><b>不进寺</b>，在拉姆央措圣湖畔观景台看。整座寺依山而建、金顶层叠，湖面能拍到完整倒影——<b>这个角度比进寺更震撼，而且免费</b> 📸</div></div>
+      <div class="tli hi"><span class="tm">13:15</span><div class="tt">🚗 出发德钦飞来寺</div><div class="td">G214，约174km，3小时10分–3小时30分<br><b>⏰ 红线：超过 13:30 未出发就砍掉白马雪山垭口</b></div></div>
+      <div class="tli"><span class="tm">15:00</span><div class="tt">白马雪山垭口（4292m，可选）</div><div class="td">隧道口前有条老路上垭口，经幡+雪山全景。<b>停10分钟就走</b></div></div>
+      <div class="tli"><span class="tm">16:45</span><div class="tt">抵达雾浓顶 check in</div><div class="td">匠庐</div></div>
+      <div class="tli hi"><span class="tm">17:30</span><div class="tt">⭐⭐⭐ 梅里雪山落日</div><div class="td">客栈观景露台或步行2分钟到观景台。卡瓦格博十三峰在夕阳中层层染色（德钦 10/3 日落约 <b>19:00</b>）</div></div>
+      <div class="tli"><span class="tm">21:00</span><div class="tt">早睡</div><div class="td">明早 06:00 起看日出</div></div>
+    </div>
+  </div>
+
+  <div class="gallery one">
+    <figure class="pcard"><img src="img/13-meili-village.jpg" alt="梅里雪山落日" loading="lazy"><span class="badge">17:30</span><figcaption><b>梅里雪山 · 雾浓顶落日</b><span>卡瓦格博十三峰 · 全程颜值天花板</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🚗 关键路段</div>
+    <table class="tbl">
+      <tr><td>独克宗 → 普达措</td><td>22km · 40分</td></tr>
+      <tr><td>普达措 → 松赞林寺</td><td>30km · 50分</td></tr>
+      <tr><td>松赞林寺 → 飞来寺</td><td><b>174km · 3.5小时</b></td></tr>
+    </table>
+    <div class="box tip" style="margin:11px 0 0;"><span class="bi">💡</span><span>最后这段途经 <b>纳帕海 → 尼西乡 → 白马雪山 → 德钦</b>，一路都是风景。<b>中间至少停2次</b>让爸妈下车活动，别一口气开。</span></div>
+  </div>
+
+  <div class="box dang"><span class="bi">🏔️</span><span><b>白马雪山垭口 4292m 是全程最高点</b><br>
+    下车<b>不要快走、不要跑、不要弯腰捡东西</b>，慢动作停10分钟就上车。
+  </span></div>
+
+  <div class="box warn"><span class="bi">⛽</span><span><b>加油要提前</b>——香格里拉出发前加满，尼西乡有加油站但不保证营业，德钦县城可补。</span></div>
+
+  <div class="box tip"><span class="bi">🪪</span><span><b>爸妈记得带身份证</b>——普达措有60岁以上老年优惠票。</span></div>
+
+  <div class="box hotel"><span class="bi">🏨</span><span>
+    <b>德钦梅里雪山匠庐 · 雾浓顶</b><br>
+    热丁·雪山观景露台双床房｜10/3 → 10/4<br>
+    📍 雾浓顶观景台旁，步行即可看梅里日出日落
+  </span></div>
+</section>
+
+<!-- ============ 7 Day7 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#ff9268,#e85d33);"><span class="l">DAY</span><span class="n">7</span><span class="d">10/4 日</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#ffeee7;color:#c8502a;">🚗 梅里 → 丽江</span>
+      <div class="dtitle">日照金山 · 开开停停回丽江</div>
+      <div class="dtag">全天海拔一路走低，呼吸变轻松</div>
+    </div>
+  </div>
+
+  <div class="gallery one">
+    <figure class="pcard"><img src="img/14-kawagebo.jpg" alt="卡瓦格博日照金山" loading="lazy"><span class="badge">07:00 ⭐⭐⭐</span><figcaption><b>卡瓦格博 · 日照金山</b><span>6740m 云南第一高峰 · 全程最高光时刻</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🌄 清晨 · 日照金山</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">06:00</span><div class="tt">起床</div><div class="td"><b>厚羽绒服 + 帽子 + 手套</b>，观景台约3-5℃有风</div></div>
+      <div class="tli"><span class="tm">06:40</span><div class="tt">步行到雾浓顶观景台就位</div><div class="td">保温杯装热水带着</div></div>
+      <div class="tli hi"><span class="tm">07:00</span><div class="tt">⭐⭐⭐ 日照金山</div><div class="td">10/4 德钦日出约 <b>07:19</b>。最佳窗口是<b>日出前30分钟到日出后30分钟</b>。<br>卡瓦格博峰会先于山谷被点亮：冷灰 → 玫瑰红 → 纯金 📸<br><b>10月已进入黄金期</b>（10月–次年5月），概率比夏季高很多</div></div>
+      <div class="tli"><span class="tm">08:00</span><div class="tt">回客栈早餐、收拾、退房</div><div class="td"></div></div>
+    </div>
+  </div>
+
+  <div class="gallery one">
+    <figure class="pcard"><img src="img/15-jinshajiang.jpg" alt="金沙江大拐弯" loading="lazy"><span class="badge">11:00</span><figcaption><b>金沙江大拐弯 · 月亮湾</b><span>江水绕日锥峰画出的"Ω"形奇观</span></figcaption></figure>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🚗 白天 · 开开停停回丽江（约330km）</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">09:00</span><div class="tt">🚗 出发返程</div><div class="td"></div></div>
+      <div class="tli"><span class="tm">10:00</span><div class="tt">白马雪山垭口（4292m）</div><div class="td">Day6 如果没上，今天补。经幡+雪山全景，停20分钟</div></div>
+      <div class="tli hi"><span class="tm">11:00</span><div class="tt">⭐ 金沙江大拐弯（月亮湾）</div><div class="td">金沙江绕日锥峰画了个"Ω"，地理奇观 📸</div></div>
+      <div class="tli"><span class="tm">12:00</span><div class="tt">奔子栏午餐</div><div class="td">沿江小镇</div></div>
+      <div class="tli"><span class="tm">14:00</span><div class="tt">尼西</div><div class="td"><b>尼西土锅鸡</b>的原产地，如果奔子栏没吃饱，这里能补一顿正宗的</div></div>
+      <div class="tli"><span class="tm">15:00</span><div class="tt">纳帕海</div><div class="td">香格里拉北郊，10月草甸金黄，运气好能看到 <b>黑颈鹤</b>（国家一级保护）。路边远眺免费</div></div>
+      <div class="tli"><span class="tm">15:45</span><div class="tt">过香格里拉，不停</div><div class="td">继续南下</div></div>
+      <div class="tli"><span class="tm">17:00</span><div class="tt">虎跳峡段，不停</div><div class="td">Day5 已经看过</div></div>
+      <div class="tli hi"><span class="tm">18:00</span><div class="tt">🏁 抵达丽江，还车</div><div class="td">19:00 check in 丽江站附近酒店<br>19:30 晚餐：腊排骨火锅 / 黑山羊</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">📉 海拔一路下降（好事）</div>
+    <div style="font-size:12.5px;line-height:1.9;color:#6b625b;">
+      飞来寺 3400 → 白马雪山 <b style="color:var(--rose);">4292</b> → 奔子栏 <b>2000</b><br>
+      → 香格里拉 3280 → 丽江 <b>2400</b>
+    </div>
+    <div class="box tip" style="margin:11px 0 0;"><span class="bi">😮‍💨</span><span>除了垭口那20分钟，<b>全天海拔一路走低</b>，爸妈会明显感觉呼吸变轻松。</span></div>
+  </div>
+
+  <div class="box dang"><span class="bi">🎫</span><span><b>梅里现在是套票制</b><br>
+    观景台已打包收费：金沙江大湾 + 雾浓顶观景台 + 飞来寺观景台<br>
+    ⚠️ <b>务必提前微信问匠庐</b>：住店客人是否含雾浓顶观景台门票，还是要另买
+  </span></div>
+
+  <div class="box warn"><span class="bi">⚠️</span><span>
+    <b>今天车程约9.5小时，比 Day5 还长</b>。虽然是"开开停停"，但方向盘握9小时不轻松，<b>每2小时必须停一次</b>。<br>
+    还车时间别掐太死，<b>提前给租车公司打电话报备</b>。
+  </span></div>
+
+  <div class="box hotel"><span class="bi">🏨</span><span>
+    <b>丽江站附近酒店</b>（⚠️ 待预订）<br>
+    建议订丽江站步行10分钟内的商务酒店，明早坐高铁。<br>
+    跑了一天山路，不用讲究，能睡好就行
+  </span></div>
+</section>
+
+<!-- ============ 8 Day8 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#93a6de,#6b80c4);"><span class="l">DAY</span><span class="n">8</span><span class="d">10/5 一</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#eef1fb;color:#5b6ea8;">🚄✈️ 丽江 → 昆明 → 合肥</span>
+      <div class="dtitle">C452 早班车 · 满载而归</div>
+      <div class="dtag">12:02 到昆明，16:05 起飞，一点不赶</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🕐 时间线</div>
+    <div class="tl">
+      <div class="tli"><span class="tm">06:30</span><div class="tt">起床</div><div class="td"></div></div>
+      <div class="tli"><span class="tm">07:00</span><div class="tt">早餐 + 退房</div><div class="td"></div></div>
+      <div class="tli"><span class="tm">07:30</span><div class="tt">步行到丽江站，进站候车</div><div class="td"></div></div>
+      <div class="tli hi"><span class="tm">08:08</span><div class="tt">🚄 C452 丽江 → 昆明</div><div class="td">3小时54分｜<b>建议买一等座</b>，前一天刚跑完330km山路，让爸妈睡一路</div></div>
+      <div class="tli"><span class="tm">12:02</span><div class="tt">抵达昆明站</div><div class="td">市区，就是 Day1 住的格林豪泰旁边</div></div>
+      <div class="tli"><span class="tm">12:15</span><div class="tt">最后一碗过桥米线 + 伴手礼</div><div class="td">市区比机场选择多</div></div>
+      <div class="tli"><span class="tm">13:30</span><div class="tt">去长水机场</div><div class="td"><b>地铁6号线直达</b>，比打车稳，不怕堵。约40分钟</div></div>
+      <div class="tli"><span class="tm">14:15</span><div class="tt">机场值机托运</div><div class="td">建议提前线上值机</div></div>
+      <div class="tli hi"><span class="tm">16:05</span><div class="tt">✈ 3U8233 昆明 → 合肥</div><div class="td"></div></div>
+      <div class="tli hi"><span class="tm">18:30</span><div class="tt">🏠 落地合肥新桥，回家</div><div class="td">8天的山川大地，完美收官</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🎁 伴手礼清单</div>
+    <div class="chips" style="margin-bottom:11px;">
+      <span class="chip food">鲜花饼（嘉华/潘祥记）</span>
+      <span class="chip food">宣威火腿</span>
+      <span class="chip food">云腿月饼</span>
+      <span class="chip food">野生菌干货</span>
+      <span class="chip food">普洱茶</span>
+    </div>
+    <div class="box warn" style="margin:0;"><span class="bi">🧳</span><span><b>宣威火腿必须托运</b>，不能随身。<b>菌油、蜂蜜等液体一律托运</b>，别放随身包。</span></div>
+  </div>
+
+  <div class="box tip"><span class="bi">📍</span><span>C452 终点显示"昆明"，应该是<b>昆明站</b>（市区），不是昆明南站。买票时留意确认站名。</span></div>
+</section>
+
+<!-- ============ 9 天气与海拔 ============ -->
+<section class="panel">
+  <div class="dhead">
+    <div class="dbadge" style="background:linear-gradient(150deg,#5cbfda,#3392b3);"><span class="l">INFO</span><span class="n">🌤</span><span class="d">预告</span></div>
+    <div class="dinfo">
+      <span class="droute" style="background:#e6f5fa;color:#2b7f9b;">🌤️ 天气 · 海拔预告</span>
+      <div class="dtitle">这趟从 1891m 走到 4292m</div>
+      <div class="dtag">温差最大能到 20℃，衣服按洋葱式带</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🌡️ 各地气温（10月常年均值）</div>
+    <table class="wx">
+      <tr><th>地点</th><th>白天</th><th>夜间</th><th>体感</th></tr>
+      <tr><td>昆明<span class="alt">1891m</span></td><td class="hot">23℃</td><td>11℃</td><td>舒适</td></tr>
+      <tr><td>大理·双廊<span class="alt">1900m</span></td><td class="hot">22℃</td><td>12℃</td><td>舒适</td></tr>
+      <tr><td>丽江·束河<span class="alt">2400m</span></td><td class="hot">23℃</td><td>11℃</td><td>白天热夜里凉</td></tr>
+      <tr><td>玉龙雪山<span class="alt">3100–3240m</span></td><td>10℃</td><td class="cold">2℃</td><td>需羽绒</td></tr>
+      <tr><td>香格里拉<span class="alt">3280m</span></td><td>15℃</td><td class="cold">3℃</td><td>早晚很冷</td></tr>
+      <tr><td>普达措<span class="alt">3705m</span></td><td>12℃</td><td class="frz">0℃</td><td>清晨可能结霜</td></tr>
+      <tr><td>白马雪山垭口<span class="alt">4292m</span></td><td class="frz">5℃</td><td class="frz">−5℃</td><td>大风，刺骨</td></tr>
+      <tr><td>梅里·飞来寺<span class="alt">3400m</span></td><td>14℃</td><td class="frz">2℃</td><td>日出时 3–5℃</td></tr>
+    </table>
+    <div class="box tip" style="margin:13px 0 0;"><span class="bi">☀️</span><span><b>好消息：10月是云南全年最好的季节</b>——雨季已结束，晴天概率高、空气通透、能见度好。这也是梅里日照金山黄金期（10月–次年5月）的开端。</span></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">📈 八日海拔曲线</div>
+    <div class="altrow"><div class="altname">昆明<span>Day 1</span></div><div class="altbarwrap"><div class="altbar" style="--w:44%;background:linear-gradient(90deg,#ffd08a,#f5b53f);">1891m</div></div></div>
+    <div class="altrow"><div class="altname">大理<span>Day 2</span></div><div class="altbarwrap"><div class="altbar" style="--w:44%;background:linear-gradient(90deg,#7fd3e6,#3fa9c9);">1900m</div></div></div>
+    <div class="altrow"><div class="altname">丽江<span>Day 3–4</span></div><div class="altbarwrap"><div class="altbar" style="--w:56%;background:linear-gradient(90deg,#f5c478,#dc9130);">2400m</div></div></div>
+    <div class="altrow"><div class="altname">玉龙·云杉坪<span>Day 4</span></div><div class="altbarwrap"><div class="altbar" style="--w:75%;background:linear-gradient(90deg,#eeb663,#cd8425);">3240m</div></div></div>
+    <div class="altrow"><div class="altname">香格里拉<span>Day 5</span></div><div class="altbarwrap"><div class="altbar" style="--w:76%;background:linear-gradient(90deg,#a89ceb,#7166cd);">3280m</div></div></div>
+    <div class="altrow"><div class="altname">普达措<span>Day 6</span></div><div class="altbarwrap"><div class="altbar" style="--w:86%;background:linear-gradient(90deg,#9689e6,#5d51bd);">3705m</div></div></div>
+    <div class="altrow"><div class="altname">白马雪山垭口<span>Day 6 / 7</span></div><div class="altbarwrap"><div class="altbar" style="--w:100%;background:linear-gradient(90deg,#ff9a7a,#e04a2f);">4292m ⚠</div></div></div>
+    <div class="altrow"><div class="altname">梅里·飞来寺<span>Day 6–7</span></div><div class="altbarwrap"><div class="altbar" style="--w:79%;background:linear-gradient(90deg,#ffa992,#e2705a);">3400m</div></div></div>
+    <div class="altrow"><div class="altname">丽江<span>Day 7–8</span></div><div class="altbarwrap"><div class="altbar" style="--w:56%;background:linear-gradient(90deg,#f5c478,#dc9130);">2400m</div></div></div>
+    <div class="box warn" style="margin:13px 0 0;"><span class="bi">📊</span><span>
+      整体是<b>阶梯式上升</b>，符合高原适应规律。两个关键节点：<br>
+      ① <b>10/2 晚抵达香格里拉 3280m</b>——第一次真正上高原，当晚最要紧<br>
+      ② <b>10/3 白马雪山垭口 4292m</b>——全程最高点，只停10分钟
+    </span></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🧥 穿衣策略：洋葱式三层</div>
+    <table class="tbl">
+      <tr><td><b>内层</b></td><td>速干/纯棉长袖 ×3-4</td></tr>
+      <tr><td><b>中层</b></td><td>抓绒衣 / 薄毛衣</td></tr>
+      <tr><td><b>外层</b></td><td>羽绒服（梅里必备）+ 防风外套</td></tr>
+      <tr><td><b>下装</b></td><td>长裤为主，香格里拉段建议加绒</td></tr>
+      <tr><td><b>配件</b></td><td>帽子 · 手套 · 围巾 · 墨镜</td></tr>
+    </table>
+    <div class="box tip" style="margin:13px 0 0;"><span class="bi">👕</span><span>
+      昆明大理白天穿短袖都行，梅里日出要裹羽绒——<b>同一趟旅行温差跨度 20℃+</b>。<br>
+      别带厚重的单件大衣，<b>薄的多件叠穿</b>更实用。
+    </span></div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">☀️ 高原紫外线（比温度更要命）</div>
+    <div style="font-size:12.5px;line-height:1.8;color:#6b625b;">
+      海拔每升高 1000m，紫外线强度增加约 <b>10-12%</b>。<br>
+      香格里拉、梅里段的紫外线是平原的 <b>近1.5倍</b>，即便阴天也会晒伤。
+    </div>
+    <div class="chips" style="margin-top:11px;">
+      <span class="chip gear">高倍防晒霜 SPF50+</span>
+      <span class="chip gear">墨镜（雪盲预防）</span>
+      <span class="chip gear">遮阳帽</span>
+      <span class="chip gear">润唇膏</span>
+      <span class="chip gear">保湿面霜</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctitle">🫁 高原反应速查</div>
+    <table class="tbl">
+      <tr><td><b>轻微</b><br><span style="color:#b0a49c;font-size:11px;">头痛 · 气短 · 睡不好</span></td><td>正常现象<br>吸氧 / 头痛粉 / 多休息</td></tr>
+      <tr><td><b>中度</b><br><span style="color:#b0a49c;font-size:11px;">持续头痛 · 恶心呕吐</span></td><td>立即休息吸氧<br>不再上升海拔</td></tr>
+      <tr><td><b>严重</b><br><span style="color:#b0a49c;font-size:11px;">意识模糊 · 呼吸困难</span></td><td style="color:var(--rose);font-weight:900;">立刻下撤 + 就医</td></tr>
+    </table>
+    <div class="box dang" style="margin:13px 0 0;"><span class="bi">🚫</span><span>
+      <b>高原四不要：</b><br>不喝酒 · 不洗热水澡 · 不剧烈运动 · 不吃太饱<br>
+      <b>三要：</b>多喝水 · 早睡 · 慢动作
+    </span></div>
+  </div>
+
+  <div class="box tip"><span class="bi">🦞</span><span>行程有变动随时告诉我，我来改。<br>祝旅途顺利，爸妈开心 🌿</span></div>
+</section>
+
+</div>
+
+<div class="lb" id="lb">
+  <span class="cls">✕</span>
+  <img id="lbimg" src="" alt="">
+  <div class="cap" id="lbcap"></div>
+</div>
+
+<div class="nav">
+  <button class="nbtn" id="prev">← 上一天</button>
+  <div class="dots" id="dots"></div>
+  <button class="nbtn" id="next">下一天 →</button>
+</div>
+
+<script>
+(function(){
+  var LABELS = ['总览','D1','D2','D3','D4','D5','D6','D7','D8','🌤天气'];
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
+  var tabsEl = document.getElementById('tabs');
+  var dotsEl = document.getElementById('dots');
+  var prevB  = document.getElementById('prev');
+  var nextB  = document.getElementById('next');
+  var pgnum  = document.getElementById('pgnum');
+  var prog   = document.getElementById('progbar');
+  var lb     = document.getElementById('lb');
+  var lbimg  = document.getElementById('lbimg');
+  var lbcap  = document.getElementById('lbcap');
+  var cur = 0;
+
+  LABELS.forEach(function(t,i){
+    var b=document.createElement('div');
+    b.className='tab'+(i===0?' on':''); b.textContent=t;
+    b.onclick=function(){go(i);}; tabsEl.appendChild(b);
+    var d=document.createElement('div');
+    d.className='dot'+(i===0?' on':'');
+    d.onclick=function(){go(i);}; dotsEl.appendChild(d);
+  });
+  var tabEls=Array.prototype.slice.call(tabsEl.children);
+  var dotEls=Array.prototype.slice.call(dotsEl.children);
+
+  function go(i){
+    if(i<0||i>=panels.length||i===cur) return;
+    var back = i<cur;
+    panels[cur].className='panel'+(back?' back':'');
+    cur=i;
+    panels[cur].className='panel on';
+    panels[cur].scrollTop=0;
+    tabEls.forEach(function(e,k){e.className='tab'+(k===i?' on':'');});
+    dotEls.forEach(function(e,k){e.className='dot'+(k===i?' on':'');});
+    prevB.disabled=(i===0);
+    nextB.disabled=(i===panels.length-1);
+    prevB.textContent = i>0 ? '← '+LABELS[i-1] : '← 上一天';
+    nextB.textContent = i<panels.length-1 ? LABELS[i+1]+' →' : '下一天 →';
+    pgnum.textContent=(i+1)+' / '+panels.length;
+    prog.style.width = ((i+1)/panels.length*100)+'%';
+    var t=tabEls[i];
+    tabsEl.scrollTo({left:t.offsetLeft-tabsEl.clientWidth/2+t.clientWidth/2,behavior:'smooth'});
+  }
+
+  prevB.onclick=function(){go(cur-1);};
+  nextB.onclick=function(){go(cur+1);};
+  document.addEventListener('keydown',function(e){
+    if(lb.classList.contains('on')){ if(e.key==='Escape') closeLb(); return; }
+    if(e.key==='ArrowRight') go(cur+1);
+    if(e.key==='ArrowLeft')  go(cur-1);
+  });
+
+  function closeLb(){ lb.classList.remove('on'); lbimg.src=''; }
+  document.addEventListener('click',function(e){
+    var card=e.target.closest && e.target.closest('.pcard');
+    if(card){
+      var im=card.querySelector('img');
+      var t=card.querySelector('figcaption b');
+      lbimg.src=im.src;
+      lbcap.textContent = t ? t.textContent : '';
+      lb.classList.add('on');
+    }
+  });
+  lb.addEventListener('click',closeLb);
+
+  var sx=0, sy=0, tracking=false;
+  var stage=document.getElementById('stage');
+  stage.addEventListener('touchstart',function(e){
+    if(lb.classList.contains('on')) return;
+    if(e.touches.length!==1) return;
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; tracking=true;
+  },{passive:true});
+  stage.addEventListener('touchend',function(e){
+    if(!tracking) return; tracking=false;
+    var dx=e.changedTouches[0].clientX-sx;
+    var dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.8){
+      go(dx<0 ? cur+1 : cur-1);
+    }
+  },{passive:true});
+
+  prog.style.width=(1/panels.length*100)+'%';
+  prevB.disabled=true;
+  nextB.textContent=LABELS[1]+' →';
+})();
+</script>
+</body>
+</html>
